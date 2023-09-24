@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<!--
+
+    <div class="container">
+        <div>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+-->
+
+<div class="container">
+    <div class="text-center">
+        <h2>Product info</h2>
+    </div>
+    <div class="row justify-content-center my-5">        
+        <div class="col-lg-6">
+            <form method="POST" class="form form-horizontal search">             
+                    {{ form.csrf_token }}
+                    {{ form.product_search(class="form-control", placeholder="Search for product...")}}              
+                    <div class="input-group-prepend">
+                        {{ form.search(class="btn btn-primary")}}
+                    </div>              
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Manufacturer</th>
+            <th>Price €</th>
+        </thead>
+        {% for product in products %}
+            <tbody>
+                <td>
+                    {{ product.name }}
+                </td>
+                <td>
+                    {% for q in quantities %}
+                        {% if product.id == q[0] %}
+                            {{q[1]}}
+                        {% endif %}
+                    {% endfor %}
+                    
+                </td>
+                <td>
+                    {{ product.manufacturer }}
+                </td>
+                <td>
+                    {{ product.price / 100 }}
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="/product_details/{{ product.id }}" role="button">Details</a>
+                </td>
+
+            </tbody>
+            {% endfor %}
+    </table>
+
+</div>
+
+
+<div class="container">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+            <a class="page-link">Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+            <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endblock %}  

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="text-center">
+        <h2>Product details</h2>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Manufacturer</th>
+            <th>Supplier</th>
+            <th>Warehouse</th>
+            <th>Price €</th>
+        </thead>
+    
+            <tbody>
+                <td>
+                    {{ product.name }}
+                </td>
+                <td>
+                    {{ quantity }}  
+                </td>
+                <td>
+                    {{ product.manufacturer }}
+                </td>
+                <td>
+                    {{ product.supplier_id }}
+                </td>
+                <td>
+                    {{ product.location_id }}
+                </td>
+                <td>
+                    {{ product.price / 100 }}
+                </td>
+                
+        </tbody>
+    
+        
+    </table>
+    <h4>Product description:</h4>
+    <p>
+        {{ product.description }}
+    </p>
+</div>
+{% endblock %}
