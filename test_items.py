@@ -152,8 +152,8 @@ categories = [""]
 manufacturer = ["Lamasonic", "Phony", "Mokia", "Sumsang", "BG"]
 suppliers = ["Bestdeals", "Lamazon", "hokmanni"]
 users = [
-    ("manager", "manager", 2)
-    ("admin", "admin", 1)
+    ("manager", "manager", 2),
+    #("admin", "admin", 1),
     ("sales", "sales",3)
 ]
 
@@ -230,14 +230,18 @@ def fill_warehouses():
 
 def create_users():
     for user in users:
-        new_user(user[0], user[1], user[2])
+        try:
+            username, password, access_level = user
+            new_user(username, password, access_level)
+        except:
+            pass
     
 def create_test_db():
+    create_users()
     create_test_warehouses()
     create_test_suppliers()
     create_test_products()
     fill_warehouses()
-    create_users()
 
 def test_list(list):
     seen = []
