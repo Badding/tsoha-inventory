@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField, SubmitField, SelectField,DecimalField
+from wtforms import StringField, IntegerField, TextAreaField, SubmitField, SelectField, DecimalField, PasswordField
 from wtforms.validators import DataRequired
 
 class New_product(FlaskForm):
@@ -20,3 +20,8 @@ class New_manufacturer(FlaskForm):
 class Product_search(FlaskForm):
     product_search = StringField()
     search = SubmitField()
+
+class login(FlaskForm):
+    username = StringField(label='Username', validators=[DataRequired()])
+    password = PasswordField(label="Password", validators=[DataRequired()])
+    submit = SubmitField(label="Sign in")

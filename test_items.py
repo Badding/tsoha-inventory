@@ -4,6 +4,7 @@ from db import db, text
 from query import find_warehouse, find_supplier, product_by_name
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
+from users import new_user
 """
 Reset the DB with these commands in terminal:
 DROP SCHEMA public CASCADE;
@@ -150,6 +151,11 @@ warehouses = ["Helsinki", "Oulu", "Rovaniemi", "Jyväskylä"]
 categories = [""]
 manufacturer = ["Lamasonic", "Phony", "Mokia", "Sumsang", "BG"]
 suppliers = ["Bestdeals", "Lamazon", "hokmanni"]
+users = [
+    ("manager", "manager", 2)
+    ("admin", "admin", 1)
+    ("sales", "sales",3)
+]
 
 #fill warehouse table
 def create_test_warehouses():
@@ -222,11 +228,16 @@ def fill_warehouses():
     if failed: print("failed to fill warehouses")
     else: print("warehouse filled")
 
+def create_users():
+    for user in users:
+        new_user(user[0], user[1], user[2])
+    
 def create_test_db():
     create_test_warehouses()
     create_test_suppliers()
     create_test_products()
     fill_warehouses()
+    create_users()
 
 def test_list(list):
     seen = []

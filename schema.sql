@@ -1,7 +1,8 @@
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE,
-    password TEXT
+    password TEXT,
+    access_level INTEGER
 );
 CREATE TABLE Suppliers (
     id SERIAL PRIMARY KEY,

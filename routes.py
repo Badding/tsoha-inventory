@@ -1,20 +1,56 @@
 from app import app
-from flask import redirect, render_template, url_for, request
+from flask import redirect, render_template, url_for, request, flash, session
 #from forms import New_product
 from products import new_product
 from query import product_query, count_all_product_quantities, all_products, count_product_quantity
+from users import check_user_password
+from functools import wraps
 import forms
 
-#TEST
+#this functifills the testing enviroment
 from test_items import create_test_db
 
-import query 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    return render_template("index.html")
+    form = forms.login()
+    if form.validate_on_submit():
+        user = request.form["username"]
+        password = request.form["password"]       
+        success = check_user_password(user, password)
+
+        if success:
+            flash("You are logged in", category="success")
+            session['username'] = user
+            return redirect(url_for('dashboard'))
+
+        else:
+            flash("Invalid username/password!", category="danger")
+
+    return render_template("index.html", form=form)
+
+# Define a custom decorator to protect routes
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not "username" in session:
+            return redirect(url_for("index"))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/logout")
+@login_required
+def logout():
+    del session["username"]  
+    return redirect("/")
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
 
 @app.route("/products", methods=["GET", "POST"])
+@login_required
 def products():
     form = forms.Product_search()
     product_list = all_products()
@@ -23,16 +59,19 @@ def products():
     return render_template("products.html", count=len(product_list), products=product_list, quantities = product_quantities,  form=form)
 
 @app.route("/orders")
+@login_required
 def orders():
     return render_template("orders.html")
 
 @app.route("/about", methods=["GET", "POST"])
+@login_required
 def about():
     if request.method == 'POST':
         create_test_db()
     return render_template("about.html")
 
 @app.route("/product_details/<product_id>")
+@login_required
 def product_details(product_id):
     product = product_query(product_id)
     product_quantities = count_product_quantity(product_id)
@@ -40,6 +79,7 @@ def product_details(product_id):
     return render_template("product_details.html", product = product, quantity = product_quantities)
     
 @app.route("/newproduct", methods=["GET", "POST"])
+@login_required
 def newproduct():
     form = forms.New_product()
     
@@ -55,8 +95,7 @@ def newproduct():
             "manufacturer" : manufacturer,
             "description" : description
         }
-        
-        
+
         new_product(product_data)
         return redirect(url_for("products"))
     else:
