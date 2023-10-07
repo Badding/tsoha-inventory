@@ -22,7 +22,7 @@ CREATE TABLE Products (
 );
 CREATE TABLE Inventory_item (
     id SERIAL PRIMARY KEY,
-    quantity INTEGER,
+    unit_size INTEGER,
     product_id INTEGER REFERENCES Products,
     supplier_id INTEGER REFERENCES Suppliers,
     location_id INTEGER REFERENCES Warehouses

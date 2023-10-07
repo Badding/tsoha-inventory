@@ -39,15 +39,31 @@ def find_warehouse(name):
     return result.fetchone()[0]
 
 def count_all_product_quantities():
-    sql = text("SELECT p.id, SUM(ii.quantity) AS total_quantity FROM Products p LEFT JOIN " 
-                "Inventory_item ii ON p.id=ii.product_id GROUP BY p.id")
+#    sql = text("SELECT p.id, SUM(ii.quantity) AS total_quantity FROM Products p LEFT JOIN " 
+#                "Inventory_item ii ON p.id=ii.product_id GROUP BY p.id")
+    sql = text("""
+                SELECT p.id, SUM(ii.unit_size) AS total_quantity 
+                FROM Products p 
+                LEFT JOIN Inventory_item ii ON p.id=ii.product_id 
+                GROUP BY p.id
+                """)
 
     result = db.session.execute(sql)
     return result.fetchall()
 
 def count_product_quantity(id):
-    sql = text("SELECT SUM(ii.quantity) FROM Products p LEFT JOIN " 
-                "Inventory_item ii ON p.id=ii.product_id WHERE p.id = ii.product_id GROUP BY p.id")
-
-    result = db.session.execute(sql)
+    sql = text("SELECT SUM(unit_size) FROM inventory_item WHERE product_id=:id")
+    result = db.session.execute(sql, {"id":id})
     return result.fetchone()[0]
+
+def count_product_per_warehouse(id):
+    sql = text("""
+                SELECT wh.name, SUM(ii.unit_size) 
+                FROM inventory_item ii 
+                LEFT JOIN warehouses wh ON ii.location_id=wh.id 
+                WHERE ii.product_id=:id 
+                GROUP BY wh.id;
+                """)
+
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchall()

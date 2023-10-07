@@ -212,16 +212,19 @@ def fill_warehouses():
     
     for p in product_list:
         try:
-            q = randint(1, 250)
-            p_id = product_by_name(p)
-            s = choice(suppliers)
-            s_id = find_supplier(s)
-            w = choice(warehouses)
-            wh_id = find_warehouse(w)
+            units_created = randint(5,10)
+            unit_size = randint(1,5) * 10
+            for unit in range(units_created):
+                u = unit_size
+                p_id = product_by_name(p)
+                s = choice(suppliers)
+                s_id = find_supplier(s)
+                w = choice(warehouses)
+                wh_id = find_warehouse(w)
 
-            sql = text("INSERT INTO Inventory_item (product_id, quantity, supplier_id, location_id) VALUES (:product_id, :quantity, :supplier_id, :location_id)")
-            db.session.execute(sql,{"product_id":p_id, "quantity":q, "supplier_id":s_id, "location_id":wh_id})
-            db.session.commit()
+                sql = text("INSERT INTO Inventory_item (product_id, unit_size, supplier_id, location_id) VALUES (:product_id, :unit_size, :supplier_id, :location_id)")
+                db.session.execute(sql,{"product_id":p_id, "unit_size":u, "supplier_id":s_id, "location_id":wh_id})
+                db.session.commit()
         except:
             failed = True
             break

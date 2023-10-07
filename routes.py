@@ -2,7 +2,7 @@ from app import app
 from flask import redirect, render_template, url_for, request, flash, session
 #from forms import New_product
 from products import new_product
-from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search
+from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search, count_product_per_warehouse
 from users import check_user_password
 from functools import wraps
 import forms
@@ -27,6 +27,9 @@ def index():
         else:
             flash("Invalid username/password!", category="danger")
 
+    if "test" in request.form:
+        create_test_db()
+        
     return render_template("index.html", form=form)
 
 # Define a custom decorator to protect routes
@@ -73,8 +76,6 @@ def orders():
 @app.route("/about", methods=["GET", "POST"])
 @login_required
 def about():
-    if request.method == 'POST':
-        create_test_db()
     return render_template("about.html")
 
 @app.route("/product_details/<product_id>")
@@ -82,8 +83,9 @@ def about():
 def product_details(product_id):
     product = product_query(product_id)
     product_quantities = count_product_quantity(product_id)
+    warehouses = count_product_per_warehouse(product_id)
 
-    return render_template("product_details.html", product = product, quantity = product_quantities)
+    return render_template("product_details.html", product = product, quantity = product_quantities, warehouses = warehouses)
     
 @app.route("/newproduct", methods=["GET", "POST"])
 @login_required

@@ -10,16 +10,18 @@
     <table class="table table-striped">
         <thead>
             <th>Product Name</th>
+            <th>Product ID</th>
             <th>Quantity</th>
             <th>Manufacturer</th>
-            <th>Supplier</th>
-            <th>Warehouse</th>
-            <th>Price €</th>
+            <th>Price € / unit</th>
         </thead>
     
             <tbody>
                 <td>
                     {{ product.name }}
+                </td>
+                <td>
+                    {{ product.id }}
                 </td>
                 <td>
                     {{ quantity }}  
@@ -28,19 +30,21 @@
                     {{ product.manufacturer }}
                 </td>
                 <td>
-                    {{ product.supplier_id }}
-                </td>
-                <td>
-                    {{ product.location_id }}
-                </td>
-                <td>
                     {{ product.price / 100 }}
                 </td>
                 
         </tbody>
-    
-        
     </table>
+    <h4>Stock in Warehouse</h4>
+    <table class="table table-striped">
+        {% for warehouse in warehouses %}
+        <tbody>
+            <td> {{ warehouse.name }} </td>
+            <td> {{ warehouse[1] }}</td>
+        </tbody>
+        {% endfor %}
+    </table>
+        
     <h4>Product description:</h4>
     <p>
         {{ product.description }}
