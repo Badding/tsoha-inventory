@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="text-center mt-5">
+    <h2>Users</h2>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Username</th>
+            <th>User ID</th>
+            <th>Name</th>
+            <th>Role</th>
+        </thead>
+        {% for user in users %}
+            <tbody>
+                <td>
+                    {{ user.username }}
+                </td>
+                <td>
+                    {{ user.id }}
+                </td>
+                <td>
+                    {{ user.first_name }} {{ user.last_name }}
+                </td>
+                <td>
+                    {{ user.position}}
+                </td>
+                <td>
+                    <form method="POST">
+                        <button type="submit" class="btn btn-primary" name="button_id" value="{{ user.id }}">Remove User</button>
+                    </form>               
+                </td>
+            </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

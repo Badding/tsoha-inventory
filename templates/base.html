@@ -32,6 +32,15 @@
                   <li><a class="dropdown-item" href="#">Something else here</a></li>
                 </ul>
               </li>
+              {% if session["user_position"] == "admin" %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fs-5 bi bi-sliders2"></i> Admin</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('users') }}">All Users</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('newuser') }}">Add new User</a></li>
+                </ul>
+
+              {% endif %}
             </ul>
             
           

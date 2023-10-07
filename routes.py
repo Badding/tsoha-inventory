@@ -2,14 +2,13 @@ from app import app
 from flask import redirect, render_template, url_for, request, flash, session
 #from forms import New_product
 from products import new_product
-from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search, count_product_per_warehouse
-from users import check_user_password
+from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search, count_product_per_warehouse, user_position, user_exists, users_all
+from users import check_user_password, new_user, remove_user
 from functools import wraps
 import forms
 
 #this functifills the testing enviroment
 from test_items import create_test_db
-
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -20,12 +19,11 @@ def index():
         success = check_user_password(user, password)
 
         if success:
-            flash("You are logged in", category="success")
             session['username'] = user
+            session['user_position'] = user_position(user)
             return redirect(url_for('dashboard'))
-
         else:
-            flash("Invalid username/password!", category="danger")
+            flash("Username/password did not match!", category="danger")
 
     if "test" in request.form:
         create_test_db()
@@ -60,7 +58,6 @@ def products():
     if request.method == 'POST':
         product = request.form["product_search"]
         result = product_search(product)
-        print(len(result))
         return render_template("products.html", count=len(result), products=result, quantities = None,  form=form)
 
     else:
@@ -72,6 +69,45 @@ def products():
 @login_required
 def orders():
     return render_template("orders.html")
+
+@app.route("/newuser", methods=["GET", "POST"])
+@login_required
+def newuser():
+    form = forms.new_user()
+    if form.validate_on_submit() and request.method == "POST":
+        user = request.form["username"]
+        first = request.form["first"]
+        last = request.form["last"]
+        password = request.form["password1"]    
+        user_position = request.form["position"]
+
+        if not user_exists(user):
+            new_user(user, first, last, password, user_position)
+            flash("New user added!")
+            return redirect(url_for("newuser"))
+
+        else:
+            flash("User name already exists.")
+
+
+    return render_template("newuser.html", form=form)
+
+@app.route("/users", methods=["GET", "POST"])
+@login_required
+def users():
+    users = users_all()
+    if request.method == 'POST':
+        
+        id = request.form["button_id"]
+        user_id = user_exists(session["username"])
+        
+        if id != user_id:
+            print(id)
+            remove_user(id)
+
+        return redirect(url_for("users"))
+    
+    return render_template("users.html", count=len(users), users=users)
 
 @app.route("/about", methods=["GET", "POST"])
 @login_required

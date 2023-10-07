@@ -152,9 +152,9 @@ categories = [""]
 manufacturer = ["Lamasonic", "Phony", "Mokia", "Sumsang", "BG"]
 suppliers = ["Bestdeals", "Lamazon", "hokmanni"]
 users = [
-    ("manager", "manager", 2),
-    #("admin", "admin", 1),
-    ("sales", "sales",3)
+    ("manager","Michael", "Scott", "manager", "manager"),
+    ("admin","Ryan", "Howard", "admin", "admin"),
+    ("sales","Jim", "Halpert", "sales", "sales")
 ]
 
 #fill warehouse table
@@ -234,8 +234,8 @@ def fill_warehouses():
 def create_users():
     for user in users:
         try:
-            username, password, access_level = user
-            new_user(username, password, access_level)
+            username, first, last, password, position = user
+            new_user(username, first, last, password, position)
         except:
             pass
     
