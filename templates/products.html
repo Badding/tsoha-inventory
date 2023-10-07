@@ -43,7 +43,9 @@
                 <td>
                     {{ product.name }}
                 </td>
+                {% if quantities %}
                 <td>
+
                     {% for q in quantities %}
                         {% if product.id == q[0] %}
                             {{q[1]}}
@@ -51,6 +53,7 @@
                     {% endfor %}
                     
                 </td>
+                {% endif %}
                 <td>
                     {{ product.manufacturer }}
                 </td>

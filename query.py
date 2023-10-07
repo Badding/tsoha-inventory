@@ -12,6 +12,11 @@ def product_by_name(name):
     result = db.session.execute(sql, {"name":name})
     return result.fetchone()[0]
 
+def product_search(name):
+    sql = text("SELECT * FROM products WHERE name ILIKE '%' || :name || '%'")
+    result = db.session.execute(sql, {"name":name})
+    return result.fetchall()
+
 def all_products():
     sql = text("SELECT * FROM products ORDER BY name")
     result = db.session.execute(sql)

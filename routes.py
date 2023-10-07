@@ -2,7 +2,7 @@ from app import app
 from flask import redirect, render_template, url_for, request, flash, session
 #from forms import New_product
 from products import new_product
-from query import product_query, count_all_product_quantities, all_products, count_product_quantity
+from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search
 from users import check_user_password
 from functools import wraps
 import forms
@@ -53,10 +53,17 @@ def dashboard():
 @login_required
 def products():
     form = forms.Product_search()
-    product_list = all_products()
-    product_quantities = count_all_product_quantities()
 
-    return render_template("products.html", count=len(product_list), products=product_list, quantities = product_quantities,  form=form)
+    if request.method == 'POST':
+        product = request.form["product_search"]
+        result = product_search(product)
+        print(len(result))
+        return render_template("products.html", count=len(result), products=result, quantities = None,  form=form)
+
+    else:
+        product_list = all_products()
+        product_quantities = count_all_product_quantities()
+        return render_template("products.html", count=len(product_list), products=product_list, quantities = product_quantities,  form=form)
 
 @app.route("/orders")
 @login_required
