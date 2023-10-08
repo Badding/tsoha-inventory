@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="text-center">
+        <h2>Order details</h2>
+    </div>
+</div>
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Address</th>
+            <th>Date</th>
+            <th>Seller</th>
+            <th>Total €</th>
+        </thead>
+    
+        
+        <tbody>
+            <td>
+                {{ order[0]}}
+            </td>
+            <td>
+                {{ order[1] }}
+            </td>
+            <td>
+                {{ order[2] }}
+            </td>
+            <td>
+                {{ order[3].strftime("%Y-%m-%d %H:%M:%S") }}
+            </td>
+            <td>
+                {{ order[4] }} {{ order[5]}}
+            </td>
+            <td>
+                {{ order[6] / 100 }}
+            </td>
+
+        </tbody>
+        </tbody>
+    </table>
+    <h4>Products in order</h4>
+    <table class="table table-striped">
+        {% for product in products_list %}
+        <tbody>
+            <td> {{ product.product_name }} </td>
+            <td> {{ product.quantity }}</td>
+        </tbody>
+        {% endfor %}
+    </table>
+
+    <a class="btn btn-primary" href="/order_add/{{ order.sale_id }}" role="button">Add products to order</a>
+</form>
+</div>
+{% endblock %}

@@ -1,10 +1,12 @@
 from app import app
 from random import randint, choice
 from db import db, text
-from query import find_warehouse, find_supplier, product_by_name
+from query import find_warehouse, find_supplier, product_by_name, find_customer, user_exists
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from users import new_user
+from customer import new_customer
+from orders import add_order_to_database, modify_order_add_product
 """
 Reset the DB with these commands in terminal:
 DROP SCHEMA public CASCADE;
@@ -147,14 +149,32 @@ finnish_addresses = [
     "Satamakatu 1, Naantali, 21100",
 ]
 
+customers = [
+    "Wernham Hogg Paper Company",
+    "Vance Refrigeration",
+    "WUPHF.com",
+    "Utica Paper",
+    "Prince Family Paper",
+    "Saticoy Steel",
+    "City of Scranton",
+    "Serenity by Jan",
+    "Alfredo's Pizza Cafe",
+    "Hammermill Paper Company",
+    "Scranton White Pages",
+]
+
+
 warehouses = ["Helsinki", "Oulu", "Rovaniemi", "Jyväskylä"]
 categories = [""]
 manufacturer = ["Lamasonic", "Phony", "Mokia", "Sumsang", "BG"]
 suppliers = ["Bestdeals", "Lamazon", "hokmanni"]
 users = [
-    ("manager","Michael", "Scott", "manager", "manager"),
-    ("admin","Ryan", "Howard", "admin", "admin"),
-    ("sales","Jim", "Halpert", "sales", "sales")
+    ("manager", "Michael", "Scott", "manager", "manager"),
+    ("admin", "Ryan", "Howard", "admin", "admin"),
+    ("jim", "Jim", "Halpert", "sales", "sales"),
+    ("pam", "Pam", "Beesly", "sales", "sales"),
+    ("andy", "Andy", "Bernard", "sales", "sales"),
+    ("stanley", "Stanley", "Hudson", "sales", "sales")
 ]
 
 #fill warehouse table
@@ -194,7 +214,7 @@ def create_test_products():
             n = product
             m = choice(manufacturer)
             d = "this is a sample description for product: " + product
-            pr = randint(50, 5000000)
+            pr = randint(50, 50000)
 
             sql = text("INSERT INTO Products (name, manufacturer, description, price) VALUES (:name, :manufacturer, :description, :price)")
 
@@ -238,18 +258,46 @@ def create_users():
             new_user(username, first, last, password, position)
         except:
             pass
-    
+
+def create_customers():
+    for i in range(len(customers)):
+        try:
+            customer = customers[i]
+            address = finnish_addresses[i]        
+            new_customer(customer, address)
+        except:
+            pass
+
+
+def create_sales():
+    sales = 20
+    failed = False
+    for i in range(sales):
+        try:
+            c = choice(customers)
+            address = find_customer(c)[2]
+            p = choice(product_list)
+            p_id = product_by_name(p)
+            q = randint(5,50) * 10
+            seller = user_exists(choice(users)[0])[0]
+            last_order = add_order_to_database(c, address, p_id, q, seller)
+
+            product_in_order = randint (2,6)
+            for j in range(product_in_order):
+                p = choice(product_list)
+                p_id = product_by_name(p)
+                q = randint(5,50) * 10
+                modify_order_add_product(last_order, p_id, q)
+        except Exception as error:
+            failed = True
+    if failed: print("failed to fill sales: ", error)
+    else: print("sales filled")
+
 def create_test_db():
     create_users()
     create_test_warehouses()
     create_test_suppliers()
     create_test_products()
     fill_warehouses()
-
-def test_list(list):
-    seen = []
-    for item in list:
-        if item not in seen:
-            seen.append(item)
-        else:
-            print("item dublicate: " + item)
+    create_customers()
+    create_sales()

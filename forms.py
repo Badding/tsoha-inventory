@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField, SubmitField, SelectField, DecimalField, PasswordField
-from wtforms.validators import DataRequired, EqualTo, Length
+from wtforms.validators import DataRequired, EqualTo, Length, NumberRange
 
 class New_product(FlaskForm):
     product = StringField(label='Product:', validators=[DataRequired()])
@@ -21,6 +21,10 @@ class Product_search(FlaskForm):
     product_search = StringField()
     search = SubmitField()
 
+class Order_search(FlaskForm):
+    order_search = StringField()
+    search = SubmitField()
+
 class login(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired()])
     password = PasswordField(label="Password", validators=[DataRequired()])
@@ -34,3 +38,17 @@ class new_user(FlaskForm):
     password1 = PasswordField(label="Password, atleast 8 characters", validators=[DataRequired()])
     password2 = PasswordField(label="Retype password", validators=[EqualTo("password1"), Length(min=8),DataRequired()])
     submit = SubmitField(label="Add new user")
+
+class new_order(FlaskForm):
+    customer = StringField(label='Customer:', validators=[DataRequired()])
+    address = StringField(label='Address:', validators=[DataRequired()])
+    product_id = IntegerField(label='Product id:', validators=[DataRequired()])
+    quantity = IntegerField(label='Quantity:', validators=[NumberRange(min=1),DataRequired()])
+
+    """ For better sale form
+    product_search = StringField(label='Search product by name:')
+    id_search = IntegerField(label='Search product by id:')
+    search_name = SubmitField(label="Search name")
+    search_id = SubmitField(label="Search id")
+    """
+    submit = SubmitField(label="Submit sale")

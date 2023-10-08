@@ -35,11 +35,16 @@ CREATE TABLE Purchases (
 );
 CREATE TABLE Customers (
     id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE
+    name TEXT UNIQUE,
+    address TEXT
 );
 CREATE TABLE Sales (
     id SERIAL PRIMARY KEY,
-    customer_id INTEGER REFERENCES Customers
+    customer_id INTEGER REFERENCES Customers,
+    sale_date TIMESTAMP,
+    address TEXT,
+    sales_person_id INTEGER,
+    total_amount INTEGER
 );
 CREATE TABLE Salesdetail (
     id SERIAL PRIMARY KEY,
