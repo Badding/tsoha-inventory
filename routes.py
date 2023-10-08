@@ -1,8 +1,7 @@
 from app import app
 from flask import redirect, render_template, url_for, request, flash, session
-#from forms import New_product
 from products import new_product
-from query import product_query, count_all_product_quantities, all_products, count_product_quantity, product_search, count_product_per_warehouse, user_position, user_exists, users_all, all_orders, order_details_by_id, products_in_order, sum_total
+import query as q 
 from users import check_user_password, new_user, remove_user
 from orders import add_order_to_database
 from functools import wraps
@@ -21,7 +20,7 @@ def index():
 
         if success:
             session['username'] = user
-            session['user_position'] = user_position(user)
+            session['user_position'] = q.user_position(user)
             return redirect(url_for('dashboard'))
         else:
             flash("Username/password did not match!", category="danger")
@@ -49,7 +48,14 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    return render_template("dashboard.html")
+    product_count = q.count_products()
+    inventory_value = q.sum_inventory_value()
+    revenue = q.sum_sales()
+    best_sel = q.best_sellers()
+    most_items = q.most_items_perwarehouse
+    #low_inv = q.low_inventory()
+
+    return render_template("dashboard.html", product_count=product_count, most_items=most_items, inventory_value=inventory_value, revenue=revenue, best_sel=best_sel)
 
 @app.route("/neworder", methods=["GET", "POST"])
 @login_required
@@ -63,10 +69,10 @@ def neworder():
         product_id = request.form["product_id"]
         quantity = int(request.form["quantity"])
 
-        if product_query(product_id):
+        if q.product_query(product_id):
             new_order_valitated = True
             
-            if count_product_quantity(product_id) < quantity:
+            if q.count_product_quantity(product_id) < quantity:
                 new_order_valitated = False
                 flash("Not enough inventory for order!")
 
@@ -74,7 +80,7 @@ def neworder():
             flash("Product not found.")
 
         if new_order_valitated:
-            sale_person_id = user_exists(session["username"])[0]
+            sale_person_id = q.user_exists(session["username"])[0]
             add_order_to_database(customer, address, product_id, quantity, sale_person_id)
             
 
@@ -87,12 +93,12 @@ def products():
 
     if request.method == 'POST':
         product = request.form["product_search"]
-        result = product_search(product)
+        result = q.product_search(product)
         return render_template("products.html", count=len(result), products=result, quantities = None,  form=form)
 
     else:
-        product_list = all_products()
-        product_quantities = count_all_product_quantities()
+        product_list = q.all_products()
+        product_quantities = q.count_all_product_quantities()
         return render_template("products.html", count=len(product_list), products=product_list, quantities = product_quantities,  form=form)
 
 @app.route("/orders", methods=["GET", "POST"])
@@ -103,20 +109,23 @@ def orders():
     if request.method == 'POST':
         pass
     else:
-        orders_list = all_orders()
-        totals = sum_total()
+        orders_list = q.all_orders()
+        totals = q.sum_total()
     return render_template("orders.html", count=len(orders_list), orders=orders_list, totals=totals, form=form)
 
-@app.route("/order_details/<order_id>", methods=["GET", "POST"])
+@app.route("/order_details/<order_id>")
 @login_required
 def order_details(order_id):
-    if request.method == 'GET':
-        print("hello")
-        pass
-    order = order_details_by_id(order_id)
-    products_list = products_in_order(order_id)
+    order = q.order_details_by_id(order_id)
+    products_list = q.products_in_order(order_id)
 
     return render_template("order_details.html", order=order, count=len(products_list), products_list=products_list)
+
+@app.route("/order_add/<order_id>")
+@login_required
+def order_add(order_id):
+    pass
+    return render_template("order_details.html")
 
 @app.route("/newuser", methods=["GET", "POST"])
 @login_required
@@ -129,7 +138,7 @@ def newuser():
         password = request.form["password1"]    
         user_position = request.form["position"]
 
-        if not user_exists(user):
+        if not q.user_exists(user):
             new_user(user, first, last, password, user_position)
             flash("New user added!")
             return redirect(url_for("newuser"))
@@ -143,11 +152,11 @@ def newuser():
 @app.route("/users", methods=["GET", "POST"])
 @login_required
 def users():
-    users = users_all()
+    users = q.users_all()
     if request.method == 'POST':
         
         id = request.form["button_id"]
-        user_id = user_exists(session["username"])
+        user_id = q.user_exists(session["username"])
         
         if id != user_id:
             print(id)
@@ -165,9 +174,9 @@ def about():
 @app.route("/product_details/<product_id>")
 @login_required
 def product_details(product_id):
-    product = product_query(product_id)
-    product_quantities = count_product_quantity(product_id)
-    warehouses = count_product_per_warehouse(product_id)
+    product = q.product_query(product_id)
+    product_quantities = q.count_product_quantity(product_id)
+    warehouses = q.count_product_per_warehouse(product_id)
 
     return render_template("product_details.html", product = product, quantity = product_quantities, warehouses = warehouses)
     

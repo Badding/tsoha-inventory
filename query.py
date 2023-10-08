@@ -32,7 +32,41 @@ def find_supplier(name):
     result = db.session.execute(sql, {"name":name})
     return result.fetchone()[0]
 
+def count_products():
+    sql = text("SELECT COUNT(*) AS product_count FROM Products;")
+    result = db.session.execute(sql)
+    return result.fetchone()[0]
+
+def sum_inventory_value():
+    sql = text("""SELECT SUM(ii.unit_size * p.price) AS total_inventory_value
+    FROM Inventory_item AS ii
+    JOIN Products AS p ON ii.product_id = p.id;""")
+    result = db.session.execute(sql)
+    return result.fetchone()[0]
+
+def best_sellers():
+    sql = text("""SELECT p.name, SUM(sd.quantity) AS total_quantity_sold
+    FROM Products AS p
+    JOIN Salesdetail AS sd ON p.id = sd.product_id
+    GROUP BY p.name
+    ORDER BY total_quantity_sold DESC
+    LIMIT 5;""")
+    result = db.session.execute(sql)
+    return result.fetchall()
+
+
+
 #warehouse queries
+def most_items_perwarehouse():
+    sql = text("""SELECT w.name AS warehouse_name, COUNT(*) AS item_count
+        FROM Warehouses w
+        INNER JOIN Inventory_item i ON w.id = i.location_id
+        GROUP BY w.name
+        ORDER BY item_count DESC
+        LIMIT 1;""")   
+    result = db.session.execute(sql)
+    return result.fetchall()
+
 def find_warehouse(name):
     sql = text("SELECT id FROM Warehouses WHERE name=(:name)")
     result = db.session.execute(sql, {"name":name})
@@ -70,6 +104,17 @@ def count_order_total(product_id, quantity):
     sql = text("SELECT price FROM Products WHERE id=:product_id")     
     result = db.session.execute(sql, {"product_id":product_id})
     return result.fetchall()[0] * quantity
+
+def low_inventory():
+    sql = text("""SELECT p.name, ii.unit_size
+    FROM Products AS p
+    JOIN Inventory_item AS ii ON p.id = ii.product_id
+    WHERE ii.unit_size < 150;""")   
+    result = db.session.execute(sql)
+    return result.fetchall()
+
+
+
 
 #User queries
 
@@ -159,6 +204,12 @@ def sum_total():
     result = db.session.execute(sql)
     return result.fetchall()
 
+#Sales
+def sum_sales():
+    sql = text("""SELECT COUNT(*) AS total_sales, SUM(total_amount) AS total_revenue
+    FROM Sales;""")
+    result = db.session.execute(sql)
+    return result.fetchall()
 
 #customer
 

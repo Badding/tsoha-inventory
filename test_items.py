@@ -214,7 +214,7 @@ def create_test_products():
             n = product
             m = choice(manufacturer)
             d = "this is a sample description for product: " + product
-            pr = randint(50, 50000)
+            pr = randint(50, 5000)
 
             sql = text("INSERT INTO Products (name, manufacturer, description, price) VALUES (:name, :manufacturer, :description, :price)")
 

@@ -1,5 +1,75 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    dashboard
+<div class="text-center mt-5">
+    <h2>Dashboard</h2>
+</div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Sales</h5>
+                    <p class="card-text">Sales done: {{ revenue[0][0] }}</p>
+                    <p class="card-text">Revenue: {{ revenue[0][1] / 100 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Products</h5>
+                    <p class="card-text">Products in inventory: {{ product_count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Warehouse</h5>
+                    <p class="card-text">Value of inventory: {{ inventory_value / 100 }} €</p>
+
+                    <p class="card-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Best sellers</h5>
+                        {% for prod in best_sel %}
+                            <p class="card-text">{{ prod[0] }} : {{ prod[1] }}</p>
+
+                        {% endfor %}
+
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"></h5>
+                        
+    
+                        <p class="card-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
