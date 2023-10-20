@@ -5,19 +5,23 @@
     <div class="text-center mt-3">
         <h2>Product info</h2>
     </div>
-    <div class="row justify-content-center my-5">        
-        <div class="col-lg-6">
-            <form method="POST" class="form form-horizontal search">             
-                    {{ form.csrf_token }}
-                    {{ form.product_search(class="form-control", placeholder="Search for product...")}}              
-                    <div class="input-group-prepend">
-                        {{ form.search(class="btn btn-primary")}}
-                    </div>              
-            </form>
-        </div>
-    </div>
-</div>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <div class="row justify-content-center my-5">        
+            <div class="col-4">
+                {{ form.csrf_token }}
+                {{ form.product_search(class="form-control", placeholder="Search for product...")}}              
+            </div>              
 
+        </div>
+        <div class="row justify-content-center my-5">
+            <div class="col-2">{{ form.order(class="form-control") }}</div>
+            <div class="col-2">{{ form.asc_or_desc(class="form-control") }}</div>
+            <div class="col-2">{{ form.sort(class="btn btn-primary")}}</div>
+        </div>
+    </form>
+</div>
+    
 <div class="container">
     <table class="table table-striped">
         <thead>
@@ -25,43 +29,36 @@
             <th>Product ID</th>
             <th>Quantity</th>
             <th>Manufacturer</th>
-            <th>Price €</th>
+            <th>Price €</th>           
         </thead>
-        {% for product in products %}
-            <tbody>
-                <td>
-                    {{ product.name }}
-                </td>
-                <td>
-                    {{ product.id }}
-                </td>
-                {% if quantities %}
-                <td>
+        {% if products  %}
 
-                    {% for q in quantities %}
-                        {% if product.id == q[0] %}
-                            {{q[1]}}
-                        {% endif %}
-                    {% endfor %}
-                    
-                </td>
-                {% endif %}
-                <td>
-                    {{ product.manufacturer }}
-                </td>
-                <td>
-                    {{ product.price / 100 }}
-                </td>
-                <td>
-                    <a class="btn btn-primary" href="/product_details/{{ product.id }}" role="button">Details</a>
-                </td>
+            {% for product in products %}
+                <tbody>
+                    <td>
+                        {{ product.name }}
+                    </td>
+                    <td>
+                        {{ product.id }}
+                    </td>            
+                    <td>
+                        {{ product[2]}}
+                    </td>
+                    <td>
+                        {{ product.manufacturer }}
+                    </td>
+                    <td>
+                        {{ product.price / 100 }}
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="/product_details/{{ product.id }}" role="button">Details</a>
+                    </td>
+                </tbody>
+            {% endfor %}
+        {% endif %}
 
-            </tbody>
-        {% endfor %}
     </table>
-
 </div>
-
 
 <div class="container">
     <nav aria-label="Page navigation example">

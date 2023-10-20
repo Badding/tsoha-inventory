@@ -32,13 +32,18 @@ Create database tables
 psql < schema.sql
 ```
 
-The app requires a .env file in the project's root directory. In this file, add your database URL and secret_key:
+The app requires an .env file in the project's root directory. In this file, add your database URL and secret_key:
 ```
 DATABASE_URL=
 SECRET_KEY=
 ```
 
 ## Usage/Examples
+
+To run the app
+```
+flask run
+```
 
 In the login screen, there is a button to fill the database with test products, sales, users, and customers.
 
@@ -51,4 +56,3 @@ manager/manager
 sales/sales
 
 ```
-

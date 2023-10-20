@@ -2,7 +2,6 @@ from db import db
 from sqlalchemy.sql import text
 
 def new_product(product):
-
     try:
             
             p = product["product"]
@@ -14,11 +13,13 @@ def new_product(product):
             pr = int((float(n)) * 100)
             
             print(p,m,d,pr)
-            sql = text("INSERT INTO Products (name, manufacturer, description, price) VALUES (:name, :manufacturer, :description, :price)")
+            sql = text("""
+                    INSERT INTO Products (name, manufacturer, description, price) 
+                    VALUES (:name, :manufacturer, :description, :price)
+                    """)
 
             db.session.execute(sql,{"name":p, "manufacturer":m, "description":d, "price":pr})
             db.session.commit()
-            
-    
+
     except:
-        pass
+        db.session.rollback()

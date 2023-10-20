@@ -4,13 +4,9 @@ from wtforms.validators import DataRequired, EqualTo, Length, NumberRange
 
 class New_product(FlaskForm):
     product = StringField(label='Product:', validators=[DataRequired()])
-    #quantity = IntegerField(label='Quantity:', validators=[DataRequired()])
     manufacturer = StringField(label='Manufacturer:')
     description = TextAreaField(label='Description:')
     price = DecimalField(label='Price:', places='2')
-    #supplier = StringField(label='Supplier:')
-    #change to SelectField
-    #location = StringField(label='Location:')
     create = SubmitField(label="Add Product")
 
 class New_manufacturer(FlaskForm):
@@ -18,12 +14,35 @@ class New_manufacturer(FlaskForm):
     create = SubmitField(label="Add Product")
 
 class Product_search(FlaskForm):
+    property = SelectField(label="Search by", choices=[("name", "Name"), ("id", "ID"), ("manufacturer", "Manufacturer")])
     product_search = StringField()
     search = SubmitField()
 
+class Product_sort(FlaskForm):
+    order = SelectField(label="Order by", choices=[
+        ("name", "Name"),
+        ("id", "ID"),
+        ("total_quantity", "Quantity"),
+        ("manufacturer", "Manufacturer"),
+        ("price", "Price")
+        ])
+    property = SelectField("Search by", choices=[("name", "Name"), ("id", "ID"), ("manufacturer", "Manufacturer")])
+    product_search = StringField()
+    asc_or_desc = SelectField(label="Ascend or descend", choices=[("ascend", "Ascend"), ("descend", "Descend")])
+    sort = SubmitField()
+
 class Order_search(FlaskForm):
+    order = SelectField(label="Order by", choices=[
+        ("name", "Customer"),
+        ("id", "ID"),
+        ("address", "Address"),
+        ("seller", "Seller"),
+        #("total", "total")
+        ])
+    property = SelectField("Search by", choices=[("name", "Name"), ("id", "ID"), ("address", "Address")])
     order_search = StringField()
-    search = SubmitField()
+    asc_or_desc = SelectField(label="Ascend or descend", choices=[("ascend", "Ascend"), ("descend", "Descend")])
+    sort = SubmitField()
 
 class login(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired()])
@@ -52,3 +71,8 @@ class new_order(FlaskForm):
     search_id = SubmitField(label="Search id")
     """
     submit = SubmitField(label="Submit sale")
+
+class add_product_to_order(FlaskForm):
+    product_id = IntegerField(label='Product id:', validators=[DataRequired()])
+    quantity = IntegerField(label='Quantity:', validators=[NumberRange(min=1),DataRequired()])
+    submit = SubmitField(label="Add product")

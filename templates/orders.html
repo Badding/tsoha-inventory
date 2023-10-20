@@ -6,17 +6,20 @@
     <div class="text-center mt-3">
         <h2>Orders</h2>
     </div>
-    <div class="row justify-content-center my-5">        
-        <div class="col-lg-6">
-            <form method="POST" class="form form-horizontal search">             
-                    {{ form.csrf_token }}
-                    {{ form.order_search(class="form-control", placeholder="Search for orders id")}}              
-                    <div class="input-group-prepend">
-                        {{ form.search(class="btn btn-primary")}}
-                    </div>              
-            </form>
-        </div>
-    </div>
+    <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <div class="row justify-content-center my-5">        
+            <div class="col-4">
+                {{ form.csrf_token }}
+                {{ form.order_search(class="form-control", placeholder="Search for orders...")}}              
+            </div>
+            
+        <div class="row justify-content-center my-5">
+            <div class="col-2">{{ form.order(class="form-control")}}</div>
+            <div class="col-2">{{ form.asc_or_desc(class="form-control") }}</div>
+            <div class="col-2">{{ form.sort(class="btn btn-primary")}}</div>           
+        </div>              
+    </form>
 </div>
 
 
@@ -30,38 +33,34 @@
             <th>Seller</th>
             <th>Total €</th>
         </thead>
+        {% if orders  %}
+            {% for order in orders %}
+                <tbody>
+                    <td>
+                        {{ order.sale_id }}
+                    </td>
+                    <td>
+                        {{ order.customer_name }}
+                    </td>
+                    <td>
+                        {{ order.sale_address }}
+                    </td>
+                    <td>
+                        {{ order.sale_date.strftime("%Y-%m-%d %H:%M:%S") }}
+                    </td>
+                    <td>
+                        {{ order.first_name }} {{ order.last_name }}
+                    </td>
+                    <td>
+                        {{ order.total_cost / 100 }} 
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="/order_details/{{ order.sale_id }}" role="button">Details</a>
+                    </td>
 
-        {% for order in orders %}
-            <tbody>
-                <td>
-                    {{ order.sale_id }}
-                </td>
-                <td>
-                    {{ order.customer_name }}
-                </td>
-                <td>
-                    {{ order.sale_address }}
-                </td>
-                <td>
-                    {{ order.sale_date.strftime("%Y-%m-%d %H:%M:%S") }}
-                </td>
-                <td>
-                    {{ order.first_name }} {{ order.last_name }}
-                </td>
-                <td>
-                    {% for total in totals %}
-                    {% if order.sale_id == total[0] %}
-                        {{ total[1] / 100 }} 
-                    {% endif %}
-                {% endfor %}
-
-                </td>
-                <td>
-                    <a class="btn btn-primary" href="/order_details/{{ order.sale_id }}" role="button">Details</a>
-                </td>
-
-            </tbody>
-        {% endfor %}
+                </tbody>
+            {% endfor %}
+        {% endif %}
     </table>
 
 </div>

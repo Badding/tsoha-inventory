@@ -37,7 +37,7 @@
                   <li><a class="dropdown-item" href="{{ url_for('products') }}">Products</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('newproduct') }}">Add product</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('products_search')}}">Search for products</a></li>
                 </ul>
               </li>
               {% if session["user_position"] == "admin" %}

@@ -10,4 +10,4 @@ def new_customer(customer, address):
         db.session.commit()
     
     except:
-        pass
+        db.session.callback()

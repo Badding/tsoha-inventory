@@ -17,25 +17,24 @@
             <th>Total €</th>
         </thead>
     
-        
         <tbody>
             <td>
-                {{ order[0]}}
+                {{ order[0].sale_id}}
             </td>
             <td>
-                {{ order[1] }}
+                {{ order[0].customer_name }}
             </td>
             <td>
-                {{ order[2] }}
+                {{ order[0].sale_address }}
             </td>
             <td>
-                {{ order[3].strftime("%Y-%m-%d %H:%M:%S") }}
+                {{ order[0].sale_date.strftime("%Y-%m-%d %H:%M:%S") }}
             </td>
             <td>
-                {{ order[4] }} {{ order[5]}}
+                {{ order[0].first_name }} {{ order[0].last_name }}
             </td>
             <td>
-                {{ order[6] / 100 }}
+                {{ order[0].total_cost / 100 }}
             </td>
 
         </tbody>
@@ -51,7 +50,7 @@
         {% endfor %}
     </table>
 
-    <a class="btn btn-primary" href="/order_add/{{ order.sale_id }}" role="button">Add products to order</a>
+    <a class="btn btn-primary" href="/order_add/{{ order[0].sale_id }}" role="button">Add products to order</a>
 </form>
 </div>
 {% endblock %}
