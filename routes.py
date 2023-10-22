@@ -2,7 +2,7 @@ from app import app
 from flask import redirect, render_template, url_for, request, flash, session, abort
 from products import new_product
 import query as q 
-from users import check_user_password, new_user, remove_user
+from users import check_user_password, new_user, remove_user, change_password
 from orders import add_order_to_database, modify_order_add_product
 import warehouse as wh
 from functools import wraps
@@ -282,10 +282,20 @@ def users():
     
     return render_template("users.html", count=len(users), users=users)
 
-@app.route("/about", methods=["GET", "POST"])
+@app.route("/user", methods=["GET", "POST"])
 @login_required
-def about():
-    return render_template("about.html")
+def user():
+    form = forms.Change_password()
+    
+    if form.validate_on_submit() and request.method == "POST":
+
+        if session["csrf"] != request.form["csrf"]:
+            abort(403)
+        password = request.form["password2"]
+        user_id = q.user_exists(session["username"])[0]
+
+        change_password(password, user_id)
+    return render_template("user.html", form=form)
 
 @app.route("/product_details/<product_id>")
 @login_required
@@ -300,7 +310,6 @@ def product_details(product_id):
 @login_required
 def newproduct():
     form = forms.New_product()
-    ### TODO advanced validation
     if form.validate_on_submit() and request.method == "POST":
     
         if session["csrf"] != request.form["csrf"]:        
@@ -320,8 +329,6 @@ def newproduct():
         if not q.product_by_name(product):
             new_product(product_data)
             return redirect(url_for("products"))
-    else:
-        print(form.errors)
 
     return render_template("newproduct.html", form=form)
 

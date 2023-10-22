@@ -78,3 +78,9 @@ class add_inventory(FlaskForm):
     warehouse = SelectField('Warehouse', coerce=int)
     supplier = SelectField('Supplier', coerce=int)
     submit = SubmitField(label="Restock")
+
+class Change_password(FlaskForm):
+    old = PasswordField(label="Password, atleast 8 characters", validators=[DataRequired()])
+    password1 = PasswordField(label="Password, atleast 8 characters", validators=[DataRequired()])
+    password2 = PasswordField(label="Retype password", validators=[EqualTo("password1"), Length(min=8),DataRequired()])
+    submit = SubmitField(label="Change password")

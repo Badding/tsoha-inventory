@@ -33,3 +33,16 @@ def check_user_password(username, password):
         if check_password_hash(hash_value, password):
             result = True
     return result
+
+def change_password(password, user_id):
+    hash_value = generate_password_hash(password)
+    sql = text("""UPDATE users
+            SET password = :hash_value
+            WHERE id = (:user_id)  
+            """)
+    try:
+        db.session.execute(sql, {"user_id": user_id, "hash_value": hash_value })
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        db.session.rollback()
