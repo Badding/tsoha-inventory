@@ -8,25 +8,26 @@
                 <form method="POST" class="login">
                     {{ form.csrf_token }}
                     <input type="hidden" name="csrf" value="{{ session.csrf }}">
+
                     <div>
                         <h1 class="h3 mb-3 font-weight-normal">
-                            Create new user
+                            Restock warehouse
                         </h1>
-                        {{ form.hidden_tag() }}           
                         
-                        {{ form.username.label }}
-                        {{ form.username(class="form-control", placeholder="Username") }}
-                        {{ form.first(class="form-control", placeholder="First Name") }}
-                        {{ form.last(class="form-control", placeholder="Last Name") }}
+                        {{ form.product.label()}}
+                        {{ form.product(class="form-control", placeholder="Product ID")}}
+                        
+                        {{ form.warehouse.label()}}
+                        {{ form.warehouse(class="form-control", placeholder="Warehouse")}}
 
-                        {{ form.position.label }}
+                        {{ form.supplier.label()}}
+                        {{ form.supplier(class="form-control", placeholder="Supplier")}}
 
-                        {{ form.position(class="form-control") }}
+
+                        {{ form.quantity.label()}}
+                        {{ form.quantity(class="form-control", placeholder="quantity")}}
+                        
                         <br>
-                        {{ form.password1.label }}
-
-                        {{ form.password1(class="form-control", placeholder="Password") }}
-                        {{ form.password2(class="form-control", placeholder="Retype password") }}
 
                     <br>
                     {% for message in get_flashed_messages() %}
@@ -44,4 +45,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

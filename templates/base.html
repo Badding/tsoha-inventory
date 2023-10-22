@@ -36,10 +36,19 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{{ url_for('products') }}">Products</a></li>
                   <li><a class="dropdown-item" href="{{ url_for('newproduct') }}">Add product</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="{{ url_for('products_search')}}">Search for products</a></li>
                 </ul>
               </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fs-5 bi-grid"></i> Warehouses</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('warehouses') }}">Warehouses</a></li>
+                  <li><a class="dropdown-item" href="{{ url_for('inventory_add') }}">Add inventory to warehouse</a></li>
+                </ul>
+              </li>
+
+
+
+
               {% if session["user_position"] == "admin" %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fs-5 bi bi-sliders2"></i> Admin</a>

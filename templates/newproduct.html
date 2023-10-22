@@ -9,10 +9,10 @@
     <div class="row justify-content-center my-5">
         <div class="col-lg-6">
             <form method="POST" class="newproduct">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                {{ form.csrf_token }}
+                <input type="hidden" name="csrf" value="{{ session.csrf }}">
 
                 <div>
-                    {{ form.csrf_token }}
 
                     {{ form.product.label()}}
                     {{ form.product(class="form-control", placeholder="Product Name")}}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Product Name</th>
+            <th>Product ID</th>
+            <th>Quantity</th>
+            <th>Manufacturer</th>
+            <th>Price €</th>           
+        </thead>
+        {% if warehouse  %}
+
+            {% for product in warehouse %}
+                <tbody>
+                    <td>
+                        {{ product[0] }}
+                    </td>
+                    <td>
+                        {{ product[1] }}
+                    </td>            
+                    <td>
+                        {{ product[2]}}
+                    </td>
+                    <td>
+                        {{ product[3] }}
+                    </td>
+                    <td>
+                        {{ product[4] / 100 }}
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="/product_details/{{ product[1] }}" role="button">Details</a>
+                    </td>
+                </tbody>
+            {% endfor %}
+        {% endif %}
+
+    </table>
+</div>
+
+{% endblock %}  

@@ -1,7 +1,6 @@
 from app import app
 from random import randint, choice
 from db import db, text
-#from query import find_warehouse, find_supplier, product_by_name, find_customer, user_exists
 import query as q
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
@@ -165,7 +164,6 @@ customers = [
     "Scranton White Pages",
 ]
 
-
 warehouses = ["Helsinki", "Oulu", "Rovaniemi", "Jyväskylä"]
 categories = [""]
 manufacturer = ["Lamasonic", "Phony", "Mokia", "Sumsang", "BG"]
@@ -176,7 +174,9 @@ users = [
     ("jim", "Jim", "Halpert", "sales", "sales"),
     ("pam", "Pam", "Beesly", "sales", "sales"),
     ("andy", "Andy", "Bernard", "sales", "sales"),
-    ("stanley", "Stanley", "Hudson", "sales", "sales")
+    ("stanley", "Stanley", "Hudson", "sales", "sales"),
+    ("sales", "Sale", "Person", "sales", "sales"),
+    ("manager", "Manager", "Person", "manager", "manager")
 ]
 
 #fill warehouse table
@@ -201,7 +201,6 @@ def create_test_suppliers():
     failed = False
     for m in suppliers:
         try: 
-
 
             if q.find_supplier(m):
                 continue
@@ -244,18 +243,14 @@ def fill_warehouses():
     failed = False
     
     for p in product_list:
-            #units_created = randint(5,10)
-            #unit_size = randint(1,5) * 10
 
             p_id = q.product_by_name(p)
             s = choice(suppliers)
             s_id = q.find_supplier(s)
 
-
             for warehouse in warehouses:
                 u = randint(0,5) * 10
                 wh_id = q.find_warehouse(warehouse)
-                #print(p_id[0], u, s_id[0], wh_id[0])
                 if p_id == None or wh_id == None or s_id == None:
                     continue
 
@@ -304,7 +299,6 @@ def create_customers():
         except:
             pass
 
-
 def create_sales():
     sales = 20
     failed = False
@@ -341,5 +335,3 @@ def create_test_db():
     create_customers()
     create_sales()
     #test_error_handling()
-
-

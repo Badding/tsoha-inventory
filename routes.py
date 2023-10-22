@@ -4,6 +4,7 @@ from products import new_product
 import query as q 
 from users import check_user_password, new_user, remove_user
 from orders import add_order_to_database, modify_order_add_product
+import warehouse as wh
 from functools import wraps
 import forms
 import secrets
@@ -15,8 +16,8 @@ from test_items import create_test_db
 def index():
     form = forms.login()
 
-    if session["username"]:
-        return redirect(url_for("dashboard"))
+    #if session["username"]:
+    #    return redirect(url_for("dashboard"))
 
     if form.validate_on_submit():
         user = request.form["username"]
@@ -246,7 +247,7 @@ def newuser():
     form = forms.new_user()
     if form.validate_on_submit() and request.method == "POST":
         
-        if session["csrf_token"] != request.form["csrf_token"]:
+        if session["csrf"] != request.form["csrf"]:
             abort(403)
 
         user = request.form["username"]
@@ -254,7 +255,7 @@ def newuser():
         last = request.form["last"]
         password = request.form["password1"]    
         user_position = request.form["position"]
-
+        print("help")
         if not q.user_exists(user):
             new_user(user, first, last, password, user_position)
             flash("New user added!")
@@ -299,12 +300,12 @@ def product_details(product_id):
 @login_required
 def newproduct():
     form = forms.New_product()
-    
     ### TODO advanced validation
-    if form.validate_on_submit():
-        if session["csrf_token"] != request.form["csrf_token"]:
+    if form.validate_on_submit() and request.method == "POST":
+    
+        if session["csrf"] != request.form["csrf"]:        
             abort(403)
-
+        
         product = request.form["product"]
         price = request.form["price"]
         manufacturer = request.form["manufacturer"]
@@ -321,5 +322,59 @@ def newproduct():
             return redirect(url_for("products"))
     else:
         print(form.errors)
-        print("new product form did not pass validation")
+
     return render_template("newproduct.html", form=form)
+
+@app.route("/inventory_add", methods=["GET", "POST"])
+@login_required
+def inventory_add():
+    form = forms.add_inventory()
+    products = q.all_products("id")
+    warehouses = q.warehouses()
+    suppliers = q.all_suppliers()
+    product_list =  [(pr[0], pr[1])for pr in products]
+    wh_list =  [(wh[0], wh[1])for wh in warehouses]
+    sup_list = [(sup[0], sup[1])for sup in suppliers]
+    form.warehouse.choices = wh_list
+    form.supplier.choices = sup_list
+    form.product.choices = product_list
+    
+    if form.validate_on_submit() and request.method == "POST":
+
+        if session["csrf"] != request.form["csrf"]:      
+            abort(403)      
+
+        product_id = request.form["product"]
+        warehouse_id = request.form["warehouse"]
+        supplier_id = request.form["supplier"]
+        quantity = request.form["quantity"]
+
+        if not q.product_query(product_id):
+                flash("Product not found!")
+        else:
+            
+            wh.add_inventory_to_warehouse(
+                product_id,
+                warehouse_id,
+                supplier_id,
+                quantity
+            )
+            
+    else:
+        print(form.errors)
+    return render_template("inventory_add.html", form=form)
+
+@app.route("/warehouses", methods=["GET", "POST"])
+@login_required
+def warehouses():
+    warehouses = q.warehouses()
+
+    return render_template("warehouses.html",
+                        warehouses=warehouses)
+
+@app.route("/warehouse_details/<warehouse_id>")
+@login_required
+def warehouse_details(warehouse_id):
+    warehouse = q.warehouse_inventory(warehouse_id)
+    return render_template("warehouse_details.html",
+                        warehouse=warehouse)

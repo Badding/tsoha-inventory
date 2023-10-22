@@ -65,16 +65,16 @@ class new_order(FlaskForm):
     address = StringField(label='Address:', validators=[DataRequired()])
     product_id = IntegerField(label='Product id:', validators=[DataRequired()])
     quantity = IntegerField(label='Quantity:', validators=[NumberRange(min=1),DataRequired()])
-
-    """ For better sale form
-    product_search = StringField(label='Search product by name:')
-    id_search = IntegerField(label='Search product by id:')
-    search_name = SubmitField(label="Search name")
-    search_id = SubmitField(label="Search id")
-    """
     submit = SubmitField(label="Submit sale")
 
 class add_product_to_order(FlaskForm):
     product_id = IntegerField(label='Product id:', validators=[DataRequired()])
     quantity = IntegerField(label='Quantity:', validators=[NumberRange(min=1),DataRequired()])
     submit = SubmitField(label="Add product")
+
+class add_inventory(FlaskForm):
+    product = SelectField('Product', coerce=int)
+    quantity = IntegerField(label='Quantity:', validators=[NumberRange(min=1),DataRequired()])
+    warehouse = SelectField('Warehouse', coerce=int)
+    supplier = SelectField('Supplier', coerce=int)
+    submit = SubmitField(label="Restock")

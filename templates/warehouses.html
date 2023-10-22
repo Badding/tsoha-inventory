@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <th>Warehouse Name</th>
+            <th>Product ID</th>
+        </thead>
+        {% if warehouses  %}
+
+            {% for wh in warehouses %}
+                <tbody>
+                    <td>
+                        {{ wh.name }}
+                    </td>
+                    <td>
+                        {{ wh.id }}
+                    </td>            
+               
+                    <td>
+                        <a class="btn btn-primary" href="/warehouse_details/{{ wh[0] }}" role="button">Details</a>
+                    </td>
+                </tbody>
+            {% endfor %}
+        {% endif %}
+
+    </table>
+</div>
+
+{% endblock %}  

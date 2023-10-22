@@ -109,6 +109,11 @@ def find_supplier(name):
     result = query_wrap(sql,values)
     return result.fetchone()
 
+def all_suppliers():
+    sql = "SELECT id, name, address address FROM Suppliers"
+    result = query_wrap(sql, None)
+    return result.fetchall()
+
 def count_products():
     sql = "SELECT COUNT(*) AS product_count FROM Products"
     result = query_wrap(sql, None)
@@ -136,6 +141,14 @@ def best_sellers():
     return result.fetchall()
 
 #warehouse queries
+
+def warehouses():
+    sql = """
+        SELECT w.id, w.name
+        FROM Warehouses w
+        """
+    result = query_wrap(sql, None)
+    return result.fetchall()
 
 def most_items_perwarehouse():
     sql = """
@@ -251,7 +264,17 @@ def product_quantity_in_warehouse(product_id, warehouse_id):
     values = {"product_id":product_id, "warehouse_id": warehouse_id}
     result = query_wrap(sql, values)
     return result.fetchone()
-
+    
+def warehouse_inventory(warehouse_id):
+    sql = """
+    SELECT P.name, P.id, II.unit_size, P.manufacturer, P.price
+    FROM Products AS P
+    JOIN Inventory_item AS II ON P.id = II.product_id
+    WHERE II.location_id = (:warehouse_id);
+    """
+    values = {"warehouse_id": warehouse_id}
+    result = query_wrap(sql, values)
+    return result.fetchall()
 #User queries
 
 def users_all():
@@ -330,7 +353,7 @@ def all_orders_with_search(sort_by, asc_or_desc, string):
     end = f" ORDER BY {sort_by + asc_or_desc};"
 
     sql += where + end
-    #print(sql)
+
     result = query_wrap(sql, values)
     return result.fetchall()
 

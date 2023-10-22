@@ -4,13 +4,17 @@ This is an inventory management app designed for the tsoha course. With this app
 
 ## Features
 
-- Sign in as a user.
+- Sign in as a user. Prevent access to site without login
+- dashboard with basic information of products, sales, warehouses.
 - Admin can add and remove users and list all users.
 - Add products.
-- Create new sales; customers are added to the database if they are new.
+- Add inventory to warehouses.
+- Create new orders; customers are added to the database if they are new.
 - List orders and products.
 - Provide detailed information about orders and products.
-- Search for products by name.
+- Search for products by name, id, manufacturer.
+- Products and orders can be sorted with differnt properties. 
+
 
 ## Installation
 

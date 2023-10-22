@@ -20,11 +20,7 @@ def remove_user(id):
     except:
         db.session.rollback()
 
-
 def check_user_password(username, password):
-    #sql = text("SELECT id, password FROM users WHERE username=:username")
-    #result = db.session.execute(sql, {"username":username})
-    #user = result.fetchone()
 
     sql = "SELECT id, password FROM users WHERE username=:username"
     values = {"username": username, "password": password}
