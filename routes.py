@@ -14,6 +14,10 @@ from test_items import create_test_db
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = forms.login()
+
+    if session["username"]:
+        return redirect(url_for("dashboard"))
+
     if form.validate_on_submit():
         user = request.form["username"]
         password = request.form["password"]       
@@ -33,7 +37,7 @@ def index():
         
     return render_template("index.html", form=form)
 
-# Define a custom decorator to protect routes
+# Define a custom decorator to protect routes - login needed
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -56,12 +60,17 @@ def dashboard():
     revenue = q.sum_sales()
     best_sel = q.best_sellers()
     most_items = q.most_items_perwarehouse
-    #low_inv = q.low_inventory()
+    inv_per_wh = q.inventory_per_warehouse()
+    inv_zero = q.product_count_zero()
+    low_inv = q.low_inventory()
 
     return render_template("dashboard.html",
                             product_count=product_count,
                             most_items=most_items, inventory_value=inventory_value,
-                            revenue=revenue, best_sel=best_sel)
+                            revenue=revenue, best_sel=best_sel,
+                            inv_per_wh=inv_per_wh,
+                            inv_zero=inv_zero,
+                            )
 
 @app.route("/neworder", methods=["GET", "POST"])
 @login_required
@@ -71,9 +80,9 @@ def neworder():
 
     if form.validate_on_submit() and request.method == "POST":
 
-        if session["csrf_token"] != request.form["csrf_token"]:
+        if session["csrf"] != request.form["csrf"]:  
             abort(403)
-
+        
         customer = request.form["customer"]
         address = request.form["address"]
         product_id = request.form["product_id"]
@@ -81,25 +90,33 @@ def neworder():
 
         if q.product_query(product_id):
             new_order_valitated = True
-            
-            if q.count_product_quantity(product_id) < quantity:
+            prod_in_warehouses = q.count_product_quantity(product_id)
+
+            if prod_in_warehouses < quantity:
                 new_order_valitated = False
-                flash("Not enough inventory for the order!")
+                flash(f"Not enough inventory for the order! Only {prod_in_warehouses} in stock")
 
         else:
             flash("Product not found.")
 
         if new_order_valitated:
+            print("validates")
             sale_person_id = q.user_exists(session["username"])[0]
-            add_order_to_database(customer, address, product_id, quantity, sale_person_id)          
+            order_id = add_order_to_database(customer, address, product_id, quantity, sale_person_id)
+            
+            return redirect(url_for("order_details", order_id=order_id))
+
 
     return render_template("neworder.html", form=form)
 
 @app.route("/products", methods=["GET", "POST"])
 @login_required
 def products():
-    #search = forms.Product_search()
-    sorting_properties = {"name": "name", "id": "id", "quantity": "quantity", "price": "price"}
+    sorting_properties = {"name": "p.name",
+                        "id": "p.id",
+                        "quantity": "total_quantity",
+                        "manufacturer": "p.manufacturer",
+                        "price": "p.price"}
     order = {"ascend": " asc", "descend": " desc"}
 
     form = forms.Product_sort()
@@ -118,18 +135,15 @@ def products():
             sort_by = sorting_properties[s]
         if a in order:
             asc_or_desc = order[a]
-
+        
     else:
-        print(form.errors)
+        if form.errors:
+            print(form.errors)
 
-    #product_list = q.all_products_and_quantities(sort_by + asc_or_desc)
-    product_list = q.product_search_with_quantities(sort_by + asc_or_desc, product)
-    
+    product_list = q.product_search_with_quantities(sort_by, asc_or_desc, product)  
     
     return render_template("products.html",
-                            #count=len(product_list),
                             products=product_list,
-                            #search=search,
                             form=form,)
 
 @app.route("/products_search", methods=["GET", "POST"])
@@ -175,7 +189,9 @@ def orders():
             asc_or_desc = order[a]
 
     else:
-        print(form.errors)
+        pass
+        if form.errors:
+            print(form.errors)
 
     orders_list = q.all_orders_with_sort_and_search(sort_by, asc_or_desc, order_search)
 
@@ -186,7 +202,7 @@ def orders():
 @app.route("/order_details/<order_id>")
 @login_required
 def order_details(order_id):
-    order = q.test("s.id", " asc", order_id)
+    order = q.all_orders_with_sort_and_search("s.id", " asc", order_id)
     products_list = q.products_in_order(order_id)
     
     return render_template("order_details.html", order=order, products_list=products_list)
@@ -207,10 +223,11 @@ def order_add(order_id):
 
         if q.product_query(product_id):
             new_order_valitated = True
-            
-            if q.count_product_quantity(product_id) < quantity:
+            prod_in_warehouses = q.count_product_quantity(product_id)
+
+            if  prod_in_warehouses < quantity:
                 new_order_valitated = False
-                flash("Not enough inventory for the order!")
+                flash(f"Not enough inventory for the order! Only {prod_in_warehouses} in stock")
 
         else:
             flash("Product not found.")
@@ -219,7 +236,8 @@ def order_add(order_id):
             modify_order_add_product(order_id, product_id, quantity)         
             return redirect(url_for("order_details", order_id=order_id))
     else:
-        print(form.errors)
+        if form.errors:
+            print(form.errors)
     return render_template("order_add.html", form=form)
 
 @app.route("/newuser", methods=["GET", "POST"])

@@ -22,14 +22,14 @@ class Product_sort(FlaskForm):
     order = SelectField(label="Order by", choices=[
         ("name", "Name"),
         ("id", "ID"),
-        ("total_quantity", "Quantity"),
+        ("quantity", "Quantity"),
         ("manufacturer", "Manufacturer"),
-        ("price", "Price")
+        ("price", "Price at least")
         ])
     property = SelectField("Search by", choices=[("name", "Name"), ("id", "ID"), ("manufacturer", "Manufacturer")])
     product_search = StringField()
     asc_or_desc = SelectField(label="Ascend or descend", choices=[("ascend", "Ascend"), ("descend", "Descend")])
-    sort = SubmitField()
+    sort = SubmitField(label="Search and sort")
 
 class Order_search(FlaskForm):
     order = SelectField(label="Order by", choices=[
@@ -37,12 +37,11 @@ class Order_search(FlaskForm):
         ("id", "ID"),
         ("address", "Address"),
         ("seller", "Seller"),
-        #("total", "total")
         ])
     property = SelectField("Search by", choices=[("name", "Name"), ("id", "ID"), ("address", "Address")])
     order_search = StringField()
     asc_or_desc = SelectField(label="Ascend or descend", choices=[("ascend", "Ascend"), ("descend", "Descend")])
-    sort = SubmitField()
+    sort = SubmitField(label="Search and sort")
 
 class login(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired()])
@@ -51,7 +50,10 @@ class login(FlaskForm):
 
 class new_user(FlaskForm):
     username = StringField(label='Username, atleast 6 characters', validators=[Length(min=6), DataRequired()])
-    position = SelectField(label='Select Role', choices=[("admin", "Admin"), ("manager", "Manager"), ("sales", "Sales")], validators=[DataRequired()])
+    position = SelectField(label='Select Role',
+                        choices=[("admin", "Admin"), ("manager", "Manager"), ("sales", "Sales")],
+                        validators=[DataRequired()])
+    
     first = StringField(label='First Name', validators=[DataRequired()])
     last = StringField(label='Last Name', validators=[DataRequired()])
     password1 = PasswordField(label="Password, atleast 8 characters", validators=[DataRequired()])

@@ -7,7 +7,7 @@
         <h2>Orders</h2>
     </div>
     <form method="POST">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <input type="hidden" name="csrf" value="{{ session.csrf }}">
         <div class="row justify-content-center my-5">        
             <div class="col-4">
                 {{ form.csrf_token }}

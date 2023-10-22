@@ -42,9 +42,15 @@
     </table>
     <h4>Products in order</h4>
     <table class="table table-striped">
+        <thead>
+            <th>Product Name</th>
+            <th>Product ID</th>
+            <th>Ordered</th>
+        </thead>
         {% for product in products_list %}
         <tbody>
             <td> {{ product.product_name }} </td>
+            <td> {{ product.product_id }} </td>
             <td> {{ product.quantity }}</td>
         </tbody>
         {% endfor %}

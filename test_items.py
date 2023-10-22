@@ -200,7 +200,9 @@ def create_test_warehouses():
 def create_test_suppliers():
     failed = False
     for m in suppliers:
-        try:
+        try: 
+
+
             if q.find_supplier(m):
                 continue
 
@@ -219,8 +221,8 @@ def create_test_products():
     failed = False
     for product in product_list:
         try:
-            if q.product_by_name(product):
-                continue
+            #if q.product_by_name(product):
+            #    continue
 
             n = product
             m = choice(manufacturer)
@@ -242,9 +244,33 @@ def fill_warehouses():
     failed = False
     
     for p in product_list:
-        try:
-            units_created = randint(5,10)
-            unit_size = randint(1,5) * 10
+            #units_created = randint(5,10)
+            #unit_size = randint(1,5) * 10
+
+            p_id = q.product_by_name(p)
+            s = choice(suppliers)
+            s_id = q.find_supplier(s)
+
+
+            for warehouse in warehouses:
+                u = randint(0,5) * 10
+                wh_id = q.find_warehouse(warehouse)
+                #print(p_id[0], u, s_id[0], wh_id[0])
+                if p_id == None or wh_id == None or s_id == None:
+                    continue
+
+                try:
+                    
+                    sql = text("""INSERT INTO Inventory_item (product_id, unit_size, supplier_id, location_id) 
+                            VALUES (:product_id, :unit_size, :supplier_id, :location_id)""")
+                    db.session.execute(sql,{"product_id":p_id[0], "unit_size":u, "supplier_id":s_id[0], "location_id":wh_id[0]})
+                    db.session.commit()
+                except:
+                    failed = True
+                    db.session.rollback()
+                    break
+            """
+
             for unit in range(units_created):
                 u = unit_size
                 p_id = q.product_by_name(p)
@@ -252,21 +278,15 @@ def fill_warehouses():
                 s_id = q.find_supplier(s)
                 w = choice(warehouses)
                 wh_id = q.find_warehouse(w)
+            """
 
-                sql = text("INSERT INTO Inventory_item (product_id, unit_size, supplier_id, location_id) VALUES (:product_id, :unit_size, :supplier_id, :location_id)")
-                db.session.execute(sql,{"product_id":p_id, "unit_size":u, "supplier_id":s_id, "location_id":wh_id})
-                db.session.commit()
-        except:
-            failed = True
-            db.session.rollback()
-            break
     if failed: print("failed to fill warehouses")
     else: print("warehouse filled")
 
 def create_users():
     for user in users:
         try:
-            if q.user_exists(user): continue
+            #if q.user_exists(user): continue
 
             username, first, last, password, position = user
             new_user(username, first, last, password, position)
@@ -276,7 +296,7 @@ def create_users():
 def create_customers():
     for i in range(len(customers)):
         try:
-            if q.find_customer(customer[i]): continue
+            #if q.find_customer(customer[i]): continue
 
             customer = customers[i]
             address = finnish_addresses[i]        
@@ -284,31 +304,34 @@ def create_customers():
         except:
             pass
 
+
 def create_sales():
     sales = 20
     failed = False
+    
     for i in range(sales):
         try:
             c = choice(customers)
             address = q.find_customer(c)[2]
             p = choice(product_list)
-            p_id = q.product_by_name(p)
-            q = randint(5,50) * 10
+            p_id = q.product_by_name(p)[0]
+            quantity = randint(5,50) * 10
             seller = q.user_exists(choice(users)[0])[0]
-            last_order = add_order_to_database(c, address, p_id, q, seller)
-
+            last_order = add_order_to_database(c, address, p_id, quantity, seller)
             product_in_order = randint (2,6)
             for j in range(product_in_order):
                 p = choice(product_list)
-                p_id = q.product_by_name(p)
-                q = randint(5,50) * 10
-                modify_order_add_product(last_order, p_id, q)
+                p_id = q.product_by_name(p)[0]
+                quantity = randint(5,50) * 10
+                
+                modify_order_add_product(last_order, p_id, quantity)
         except Exception as error:
             failed = True
     if failed: print("failed to fill sales: ")
     else: print("sales filled")
 
 def create_test_db():
+    """
     """
     create_users()
     create_test_warehouses()
@@ -317,29 +340,6 @@ def create_test_db():
     fill_warehouses()
     create_customers()
     create_sales()
-    """
-    test_error_handling()
+    #test_error_handling()
 
-#testing error handling wrap
-def test_error_handling():
-    #query = "INSERT INTO warehouses (name) VALUES (:name)"
-    #v = {"name": "sinappi"}
-    
-    #query = "SELECT * FROM Products WHERE id=:id"
-    #v = {"id":159213}
-    
-    v = {"order_by": "id"}
-    x = v["order_by"]
-    query = "SELECT * FROM products ORDER BY :order_by"
-    #v = None
-    t = text(query).bindparams(order_by=v["order_by"])
-    #print(t)
-    result = query_wrap(t ,v)
-    print(type(result))
-    print(result.fetchone())
-    #print(result.fetchall())
-    #print(result.first())
-    
-    
-    #sql =
-    #result = query_wrap(sql,values)
+

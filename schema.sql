@@ -50,5 +50,6 @@ CREATE TABLE Salesdetail (
     id SERIAL PRIMARY KEY,
     order_id INTEGER REFERENCES Sales,
     product_id INTEGER REFERENCES Products,
-    quantity INTEGER
+    quantity INTEGER,
+    from_warehouse INTEGER REFERENCES Warehouses
 )

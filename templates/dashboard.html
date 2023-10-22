@@ -53,16 +53,22 @@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title"></h5>
-                        
+                        <h5 class="card-title">Stock per warehouse</h5>
+                        {% for wh in inv_per_wh %}
+                            <p class="card-text">{{ wh[0] }} : {{ wh[1] }}</p>
+
+                        {% endfor %}
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title"></h5>
-                        
+                        <h5 class="card-title">Low in stock</h5>
+                        {% for item in inv_zero %}
+                            <p class="card-text">{{ item[0] }} : {{ item[1] }}</p>
+
+                        {% endfor %}
     
                         <p class="card-text"></p>
                     </div>

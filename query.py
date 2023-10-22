@@ -13,7 +13,7 @@ def product_by_name(name):
     sql = "SELECT id FROM products WHERE name=(:name)"
     values = {"name": name}
     result = query_wrap(sql,values)
-    return result.fetchone()[0]
+    return result.fetchone()
 
 def product_search(name):
     sql = "SELECT * FROM products WHERE name ILIKE '%' || :name || '%'"
@@ -21,18 +21,65 @@ def product_search(name):
     result = query_wrap(sql,values)
     return result.fetchall()
 
-def product_search_with_quantities(sort_by, name):
+def product_search_with_quantities(sort_by, asc_or_desc, string):
+    values = {"value": string}
+    where = ""
+
+    if sort_by == "p.name":
+        where = "WHERE p.name ILIKE '%' || :value || '%'"
+    elif sort_by == "p.id":
+        if string:
+            try:
+                string = int(string)
+                where = "WHERE p.id = :value"
+                values = {"value": string}
+            except ValueError:
+                pass
+        else:
+            values = {"value": 0}
+        """
+    elif sort_by == "total_quantity":
+        
+        if string:
+            try:
+                string = int(string)
+                where = f"HAVING SUM(ii.unit_size) >= :value"
+                values = {"value": string}
+            except ValueError:
+                pass
+        else:
+            values = {"value": 0}
+        """
+    elif sort_by == "manufacturer":
+        where = "WHERE p.manufacturer ILIKE '%' || :value || '%"
+    elif sort_by == "p.price":
+        where = "WHERE p.price >= :value"
+        if string:
+            try:
+                string = int(string) * 100
+                values = {"value": string}
+            except ValueError:
+                pass
+        else:
+            values = {"value": 0}
+
     sql = f"""
-        SELECT p.id, p.name, SUM(ii.unit_size) AS total_quantity, p.manufacturer, p.price
-        FROM Products p
-        LEFT JOIN Inventory_item ii ON p.id = ii.product_id 
-        WHERE name ILIKE '%' || :name || '%'
-        GROUP BY p.id
-        ORDER BY {sort_by};
+    SELECT 
+        p.id,
+        p.name,
+        SUM(ii.unit_size) AS total_quantity,
+        p.manufacturer,
+        p.price 
+    FROM Products p
+    LEFT JOIN Inventory_item ii ON p.id = ii.product_id 
+    {where}
+    GROUP BY p.id
+    ORDER BY {sort_by} {asc_or_desc};
     """
-    values = {"name": name}
+
     result = query_wrap(sql, values)
     return result.fetchall()
+
 
 def all_products(sort_by):
     sql = f"SELECT * FROM products ORDER BY {sort_by}"
@@ -60,7 +107,7 @@ def find_supplier(name):
     sql = "SELECT id FROM Suppliers WHERE name=(:name)"
     values = {"name": name}
     result = query_wrap(sql,values)
-    return result.fetchone()[0]
+    return result.fetchone()
 
 def count_products():
     sql = "SELECT COUNT(*) AS product_count FROM Products"
@@ -106,7 +153,7 @@ def find_warehouse(name):
     sql = "SELECT id FROM Warehouses WHERE name=(:name)"
     values = {"name": name}
     result = query_wrap(sql,values)
-    return result.fetchone()[0]
+    return result.fetchone()
 
 def count_all_product_quantities():
     sql = """
@@ -127,7 +174,7 @@ def count_product_quantity(id):
 
 def count_product_per_warehouse(id):
     sql = """
-    SELECT wh.name, SUM(ii.unit_size) 
+    SELECT wh.id, wh.name, SUM(ii.unit_size) 
     FROM inventory_item ii 
     LEFT JOIN warehouses wh ON ii.location_id=wh.id 
     WHERE ii.product_id=:id 
@@ -145,13 +192,65 @@ def count_order_total(product_id, quantity):
 
 def low_inventory():
     sql = """
-    SELECT p.name, ii.unit_size
-    FROM Products AS p
-    JOIN Inventory_item AS ii ON p.id = ii.product_id
-    WHERE ii.unit_size < 150
+    SELECT
+        Products.name AS product_name,
+        Inventory_item.unit_size AS current_stock,
+        Inventory_item.location_id AS warehouse_id,
+        Warehouses.name AS warehouse_name
+    FROM
+        Inventory_item
+    INNER JOIN Products ON Inventory_item.product_id = Products.id
+    INNER JOIN Warehouses ON Inventory_item.location_id = Warehouses.id
+    WHERE
+        Inventory_item.unit_size < 20;
     """
     result = query_wrap(sql, None)
     return result.fetchall()
+    
+def product_count_zero():
+    sql = """
+    SELECT
+        Products.name AS product_name,
+        SUM(Inventory_item.unit_size) AS total_stock
+    FROM
+        Products
+    LEFT JOIN Inventory_item ON Products.id = Inventory_item.product_id
+    GROUP BY
+    Products.name
+    HAVING SUM(Inventory_item.unit_size) < 50
+    LIMIT 5
+    ;
+        """
+    result = query_wrap(sql, None)
+    return result.fetchall()
+
+
+def inventory_per_warehouse():
+    sql = """
+
+        SELECT
+            Warehouses.name AS warehouse_name,
+            sum(Inventory_item.id) AS item_count
+        FROM
+            Warehouses
+        LEFT JOIN Inventory_item ON Warehouses.id = Inventory_item.location_id
+        GROUP BY
+            Warehouses.id, Warehouses.name
+        ORDER BY
+            Warehouses.name;
+        """
+    result = query_wrap(sql, None)
+    return result.fetchall()
+
+def product_quantity_in_warehouse(product_id, warehouse_id):
+    sql = """
+    SELECT unit_size
+    FROM inventory_item ii 
+    WHERE ii.product_id=:product_id AND location_id=:warehouse_id;
+    """
+    values = {"product_id":product_id, "warehouse_id": warehouse_id}
+    result = query_wrap(sql, values)
+    return result.fetchone()
 
 #User queries
 
@@ -320,6 +419,7 @@ def order_details_by_id(order_id):
 def products_in_order(order_id):
     sql = """
     SELECT
+        p.id AS product_id,
         p.name AS product_name,
         sd.quantity
     FROM
@@ -359,6 +459,14 @@ def sum_sales():
     """
     result = query_wrap(sql, None)
     return result.fetchall()
+
+def check_product_in_salesdetail(product_id, order_id):
+    sql="""
+    SELECT quantity FROM Salesdetail WHERE order_id = (:order_id) AND product_id = (:product_id)
+    """
+    values = {"order_id":order_id, "product_id": product_id}
+    result = query_wrap(sql, values)
+    return result.fetchone()
 
 #customer
 
