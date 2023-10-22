@@ -325,8 +325,6 @@ def create_sales():
     else: print("sales filled")
 
 def create_test_db():
-    """
-    """
     create_users()
     create_test_warehouses()
     create_test_suppliers()
@@ -334,4 +332,6 @@ def create_test_db():
     fill_warehouses()
     create_customers()
     create_sales()
+    """
+    """
     #test_error_handling()

@@ -37,4 +37,20 @@ def add_inventory_to_warehouse(product_id, warehouse_id, supplier_id, quantity):
     except Exception as e:
         db.session.rollback()
         print(e)
-    
+
+def create_warehouse(name):
+    sql = text("INSERT INTO warehouses (name) VALUES (:name)")
+    try:
+        db.session.execute(sql,{"name":name} )
+        db.session.commit()
+    except:
+        pass
+
+def create_supplier(name, address):
+    sql = text("INSERT INTO Suppliers (name, address) VALUES (:name, :address) ")
+    try:
+        db.session.execute(sql,{"name":name, "address": address} )
+        db.session.commit()
+    except Exception as e:
+        print(e)
+        pass

@@ -84,3 +84,12 @@ class Change_password(FlaskForm):
     password1 = PasswordField(label="Password, atleast 8 characters", validators=[DataRequired()])
     password2 = PasswordField(label="Retype password", validators=[EqualTo("password1"), Length(min=8),DataRequired()])
     submit = SubmitField(label="Change password")
+
+class Create_warehouse(FlaskForm):
+    name = StringField(label='Warehouse Name: ', validators=[DataRequired()])
+    create = SubmitField(label="Create")
+
+class Create_supplier(FlaskForm):
+    name = StringField(label='Supplier Name: ', validators=[DataRequired()])
+    address = StringField(label='Supplier address: ', validators=[DataRequired()])
+    create = SubmitField(label="Create")

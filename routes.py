@@ -295,6 +295,9 @@ def user():
         user_id = q.user_exists(session["username"])[0]
 
         change_password(password, user_id)
+        return redirect(url_for("dashboard"))
+
+
     return render_template("user.html", form=form)
 
 @app.route("/product_details/<product_id>")
@@ -385,3 +388,50 @@ def warehouse_details(warehouse_id):
     warehouse = q.warehouse_inventory(warehouse_id)
     return render_template("warehouse_details.html",
                         warehouse=warehouse)
+
+@app.route("/warehouse_create", methods=["GET", "POST"])
+@login_required
+def warehouse_create():
+    form = forms.Create_warehouse()
+    if form.validate_on_submit() and request.method == "POST":
+
+        if session["csrf"] != request.form["csrf"]: 
+            abort(403)      
+            
+        warehouse = request.form["name"]
+        
+        if not q.find_warehouse(warehouse): 
+            
+            wh.create_warehouse(warehouse)
+            return redirect(url_for("warehouses"))
+        
+        else:
+            flash("Warehouse already exists")
+    else:
+        print(form.errors)
+    return render_template("warehouse_create.html",
+                        form=form)
+
+@app.route("/supplier_create", methods=["GET", "POST"])
+@login_required
+def supplier_create():
+    form = forms.Create_supplier()
+    if form.validate_on_submit() and request.method == "POST":
+
+        if session["csrf"] != request.form["csrf"]: 
+            abort(403)      
+            
+        supplier = request.form["name"]
+        address = request.form["address"]
+
+        if not q.find_supplier(supplier): 
+            
+            wh.create_supplier(supplier, address)
+            return redirect(url_for("warehouses"))
+        
+        else:
+            flash("supplier already exists")
+    else:
+        print(form.errors)
+    return render_template("supplier_create.html",
+                        form=form)

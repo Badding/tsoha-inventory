@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <div class="text-center">          
+        <div class="row justify-content-center my-5">
+            <div class="col-lg-6">
+                <form method="POST" class="login">
+                    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+                    {{ form.csrf_token }}
+                    <div>
+                        <h1 class="h3 mb-3 font-weight-normal">
+                            Create new Warehouse
+                        </h1>
+                        {{ form.hidden_tag() }}           
+
+                        {{ form.name(class="form-control", placeholder="Warehouse name") }}
+
+                        <br>
+
+                    <br>
+                    {% for message in get_flashed_messages() %}
+                        {% if message %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                        {{ form.create(class="btn btn-lg btn-block btn-primary")}}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
