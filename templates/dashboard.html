@@ -7,6 +7,7 @@
 </div>
 <div class="container">
     <div class="row">
+        {% if revenue[0][1] != None  %}
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
@@ -16,6 +17,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if product_count %}
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
@@ -24,6 +27,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if inventory_value != None %}
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
@@ -34,9 +39,12 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
     <div class="row">
         <div class="row">
+            {% if best_sel %}
+
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
@@ -50,6 +58,9 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+            {% if inv_per_wh %}
+
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
@@ -60,7 +71,11 @@
                         {% endfor %}
                     </div>
                 </div>
+                
             </div>
+            {% endif %}
+            {% if inv_zero %}
+
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
@@ -74,6 +89,8 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+            
         </div>
     </div>
 </div>

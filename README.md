@@ -13,7 +13,7 @@ This is an inventory management app designed for the tsoha course. With this app
 - List orders and products.
 - Provide detailed information about orders and products.
 - Search for products by name, id, manufacturer.
-- Products and orders can be sorted with differnt properties. 
+- Products and orders can be sorted with different properties.
 
 
 ## Installation

@@ -48,6 +48,9 @@ def modify_order_add_product(order_id, product_id, quantity):
 
         product_already_in = check_product_in_salesdetail(product_id, order_id)
 
+        product = q.product_query(product_id)
+        add_to_total = product.price * quantity
+
         if product_already_in != None:
 
             quantity_in_order = product_already_in[0]
@@ -65,13 +68,32 @@ def modify_order_add_product(order_id, product_id, quantity):
                     VALUES (:order_id, :product_id, :quantity) 
                     RETURNING id
             """)
-            values = {"order_id":order_id, "product_id":product_id, "quantity":quantity}
+            values = {"order_id":order_id, "product_id":product_id, "quantity":quantity, "add_to_total": add_total}
         try:
             db.session.execute(sql, values)
             db.session.commit()
+            change_order_total(order_id, add_to_total)
         except Exception as e:
             db.session.rollback()
             print(e)
+
+def change_order_total(order_id, add_to_total):
+    total = q.get_order(order_id).total_amount
+    total += add_to_total
+    sql = text("""
+            UPDATE Sales 
+            SET total_amount = (:total) 
+            WHERE id = (:order_id)
+            """)
+    
+    try:
+        db.session.execute(sql, {"order_id": order_id, "total": total})
+        db.session.commit()
+        
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+
 
 def remove_items_from_warehouse(product_id, warehouse_id, quantity):
     quantity_in_warehouse = product_quantity_in_warehouse(product_id, warehouse_id)

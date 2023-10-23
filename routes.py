@@ -67,8 +67,10 @@ def dashboard():
 
     return render_template("dashboard.html",
                             product_count=product_count,
-                            most_items=most_items, inventory_value=inventory_value,
-                            revenue=revenue, best_sel=best_sel,
+                            most_items=most_items,
+                            inventory_value=inventory_value,
+                            revenue=revenue,
+                            best_sel=best_sel,
                             inv_per_wh=inv_per_wh,
                             inv_zero=inv_zero,
                             )
@@ -369,9 +371,7 @@ def inventory_add():
                 supplier_id,
                 quantity
             )
-            
-    else:
-        print(form.errors)
+
     return render_template("inventory_add.html", form=form)
 
 @app.route("/warehouses", methods=["GET", "POST"])
@@ -407,8 +407,7 @@ def warehouse_create():
         
         else:
             flash("Warehouse already exists")
-    else:
-        print(form.errors)
+
     return render_template("warehouse_create.html",
                         form=form)
 

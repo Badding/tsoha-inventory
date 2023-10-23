@@ -326,12 +326,12 @@ def create_sales():
 
 def create_test_db():
     create_users()
+    """
     create_test_warehouses()
     create_test_suppliers()
     create_test_products()
     fill_warehouses()
     create_customers()
     create_sales()
-    """
     """
     #test_error_handling()

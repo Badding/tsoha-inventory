@@ -491,6 +491,13 @@ def check_product_in_salesdetail(product_id, order_id):
     result = query_wrap(sql, values)
     return result.fetchone()
 
+def get_order(order_id):
+    sql="""
+    SELECT * FROM Sales WHERE id = (:order_id);
+    """
+    result = query_wrap(sql, {"order_id": order_id})
+    return result.fetchone()
+
 #customer
 
 def find_customer(customer):
